@@ -16,12 +16,29 @@ class DeliveryTimerStruct extends Struct
 
     private string $formattedRemainingTime;
 
-    public function __construct(int $hours, int $minutes, bool $shipsToday, string $formattedRemainingTime)
+    private bool $shipsTomorrow;
+
+    private string $shippingWeekday;
+
+    private string $shippingDate;
+
+    public function __construct(
+        int $hours,
+        int $minutes,
+        bool $shipsToday,
+        bool $shipsTomorrow,
+        string $formattedRemainingTime,
+        string $shippingWeekday,
+        string $shippingDate
+    )
     {
         $this->hours = $hours;
         $this->minutes = $minutes;
         $this->shipsToday = $shipsToday;
         $this->formattedRemainingTime = $formattedRemainingTime;
+        $this->shipsTomorrow = $shipsTomorrow;
+        $this->shippingWeekday = $shippingWeekday;
+        $this->shippingDate = $shippingDate;
     }
 
     public function getHours(): int
@@ -39,8 +56,23 @@ class DeliveryTimerStruct extends Struct
         return $this->shipsToday;
     }
 
+    public function shipsTomorrow(): bool
+    {
+        return $this->shipsTomorrow;
+    }
+
     public function getFormattedRemainingTime(): string
     {
         return $this->formattedRemainingTime;
+    }
+
+    public function getShippingWeekday(): string
+    {
+        return $this->shippingWeekday;
+    }
+
+    public function getShippingDate(): string
+    {
+        return $this->shippingDate;
     }
 }

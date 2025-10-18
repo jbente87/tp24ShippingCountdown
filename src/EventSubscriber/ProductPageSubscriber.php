@@ -12,6 +12,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use function preg_match;
+use function preg_split;
 use function sprintf;
 
 class ProductPageSubscriber implements EventSubscriberInterface
@@ -46,22 +47,32 @@ class ProductPageSubscriber implements EventSubscriberInterface
         }
 
         $shippingTime = $this->getShippingTime($event);
+        [$shippingHour, $shippingMinute] = $this->parseShippingTime($shippingTime);
 
         $now = $this->createNow($event->getSalesChannelContext()->getContext());
-        $shippingDateTime = $this->createShippingDateTime($now, $shippingTime);
+        $holidays = $this->getShippingHolidays($event);
+        $shippingDateTime = $this->resolveNextShippingDateTime($now, $shippingHour, $shippingMinute, $holidays);
 
-        $shipsToday = $now <= $shippingDateTime;
-        if (!$shipsToday) {
-            $shippingDateTime = $shippingDateTime->modify('+1 day');
-        }
+        $shipsToday = $this->isSameDay($now, $shippingDateTime);
+        $shipsTomorrow = $this->isSameDay($now->modify('+1 day'), $shippingDateTime);
 
         $diff = $now->diff($shippingDateTime);
         $hours = (int) $diff->format('%a') * 24 + (int) $diff->format('%h');
         $minutes = (int) $diff->format('%i');
-        
+        $shippingWeekday = strtolower($shippingDateTime->format('l'));
+        $shippingDate = $shippingDateTime->format('Y-m-d');
+
         $event->getPage()->addExtension(
             'tp24ShippingCountdown',
-            new DeliveryTimerStruct($hours, $minutes, $shipsToday, $this->formatRemainingTime($hours, $minutes))
+            new DeliveryTimerStruct(
+                $hours,
+                $minutes,
+                $shipsToday,
+                $shipsTomorrow,
+                $this->formatRemainingTime($hours, $minutes),
+                $shippingWeekday,
+                $shippingDate
+            )
         );
     }
 
@@ -82,11 +93,14 @@ class ProductPageSubscriber implements EventSubscriberInterface
         return new DateTimeImmutable('now', $timezone);
     }
 
-    private function createShippingDateTime(DateTimeImmutable $now, string $shippingTime): DateTimeImmutable
+    /**
+     * @return array{0: int, 1: int}
+     */
+    private function parseShippingTime(string $shippingTime): array
     {
         [$hour, $minute] = array_map(static fn (string $part): int => (int) $part, explode(':', $shippingTime));
 
-        return $now->setTime($hour, $minute, 0);
+        return [$hour, $minute];
     }
 
     private function resolveTimezone(Context $context): DateTimeZone
@@ -101,6 +115,79 @@ class ProductPageSubscriber implements EventSubscriberInterface
         }
 
         return new DateTimeZone($timezoneName);
+    }
+
+    /**
+     * @param array<string, bool> $holidays
+     */
+    private function resolveNextShippingDateTime(DateTimeImmutable $now, int $hour, int $minute, array $holidays): DateTimeImmutable
+    {
+        $candidate = $now->setTime($hour, $minute, 0);
+
+        if ($now > $candidate || !$this->isShippingDay($candidate, $holidays)) {
+            $candidate = $now->modify('+1 day')->setTime($hour, $minute, 0);
+        }
+
+        while (!$this->isShippingDay($candidate, $holidays)) {
+            $candidate = $candidate->modify('+1 day')->setTime($hour, $minute, 0);
+        }
+
+        return $candidate;
+    }
+
+    /**
+     * @param array<string, bool> $holidays
+     */
+    private function isShippingDay(DateTimeImmutable $dateTime, array $holidays): bool
+    {
+        $weekday = (int) $dateTime->format('N');
+        if ($weekday >= 6) {
+            return false;
+        }
+
+        $dateKey = $dateTime->format('Y-m-d');
+
+        return !isset($holidays[$dateKey]);
+    }
+
+    private function isSameDay(DateTimeImmutable $first, DateTimeImmutable $second): bool
+    {
+        return $first->format('Y-m-d') === $second->format('Y-m-d');
+    }
+
+    /**
+     * @return array<string, bool>
+     */
+    private function getShippingHolidays(ProductPageLoadedEvent $event): array
+    {
+        $configured = $this->systemConfigService->get(
+            'tp24ShippingCountdown.config.shippingHolidays',
+            $event->getSalesChannelContext()->getSalesChannelId()
+        );
+
+        if (!is_string($configured) || trim($configured) === '') {
+            return [];
+        }
+
+        $holidays = [];
+        $parts = preg_split('/[\s,;]+/', $configured) ?: [];
+
+        foreach ($parts as $part) {
+            $part = trim($part);
+
+            if ($part === '') {
+                continue;
+            }
+
+            $date = DateTimeImmutable::createFromFormat('Y-m-d', $part);
+            if ($date === false) {
+                continue;
+            }
+
+            $holidays[$date->format('Y-m-d')] = true;
+        }
+
+        return $holidays;
     }
 
     private function formatRemainingTime(int $hours, int $minutes): string

@@ -5,7 +5,16 @@
             "suffix": "damit Ihre Bestellung",
             "shipToday": "noch heute",
             "shipTomorrow": "morgen",
-            "dispatchSuffix": "versendet wird."
+            "dispatchSuffix": "versendet wird.",
+            "weekday": {
+                "monday": "am Montag",
+                "tuesday": "am Dienstag",
+                "wednesday": "am Mittwoch",
+                "thursday": "am Donnerstag",
+                "friday": "am Freitag",
+                "saturday": "am Samstag",
+                "sunday": "am Sonntag"
+            }
         }
     }
 }

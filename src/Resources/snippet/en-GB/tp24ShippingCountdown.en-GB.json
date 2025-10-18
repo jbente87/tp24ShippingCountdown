@@ -5,7 +5,16 @@
             "suffix": "so that your order ships",
             "shipToday": "today",
             "shipTomorrow": "tomorrow",
-            "dispatchSuffix": "and we'll dispatch it."
+            "dispatchSuffix": "and we'll dispatch it.",
+            "weekday": {
+                "monday": "on Monday",
+                "tuesday": "on Tuesday",
+                "wednesday": "on Wednesday",
+                "thursday": "on Thursday",
+                "friday": "on Friday",
+                "saturday": "on Saturday",
+                "sunday": "on Sunday"
+            }
         }
     }
 }
