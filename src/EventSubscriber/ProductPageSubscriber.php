@@ -11,9 +11,9 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use function preg_match;
 use function preg_split;
-use function sprintf;
 
 class ProductPageSubscriber implements EventSubscriberInterface
 {
@@ -21,9 +21,12 @@ class ProductPageSubscriber implements EventSubscriberInterface
 
     private SystemConfigService $systemConfigService;
 
-    public function __construct(SystemConfigService $systemConfigService)
+    private TranslatorInterface $translator;
+
+    public function __construct(SystemConfigService $systemConfigService, TranslatorInterface $translator)
     {
         $this->systemConfigService = $systemConfigService;
+        $this->translator = $translator;
     }
 
     public static function getSubscribedEvents(): array
@@ -57,7 +60,8 @@ class ProductPageSubscriber implements EventSubscriberInterface
         $shipsTomorrow = $this->isSameDay($now->modify('+1 day'), $shippingDateTime);
 
         $diff = $now->diff($shippingDateTime);
-        $hours = (int) $diff->format('%a') * 24 + (int) $diff->format('%h');
+        $days = (int) $diff->format('%a');
+        $hours = (int) $diff->format('%h');
         $minutes = (int) $diff->format('%i');
         $shippingWeekday = strtolower($shippingDateTime->format('l'));
         $shippingDate = $shippingDateTime->format('Y-m-d');
@@ -65,11 +69,12 @@ class ProductPageSubscriber implements EventSubscriberInterface
         $event->getPage()->addExtension(
             'tp24ShippingCountdown',
             new DeliveryTimerStruct(
+                $days,
                 $hours,
                 $minutes,
                 $shipsToday,
                 $shipsTomorrow,
-                $this->formatRemainingTime($hours, $minutes),
+                $this->formatRemainingTime($days, $hours, $minutes),
                 $shippingWeekday,
                 $shippingDate
             )
@@ -190,25 +195,45 @@ class ProductPageSubscriber implements EventSubscriberInterface
         return $holidays;
     }
 
-    private function formatRemainingTime(int $hours, int $minutes): string
+    private function formatRemainingTime(int $days, int $hours, int $minutes): string
     {
-        $hourLabel = $hours === 1 ? '1 Stunde' : sprintf('%d Stunden', $hours);
-        $minuteLabel = $minutes === 1 ? '1 Minute' : sprintf('%d Minuten', $minutes);
+        $parts = [];
 
-        if ($hours === 0) {
-            $hourLabel = '';
+        if ($days > 0) {
+            $parts[] = $this->translator->trans(
+                'tp24ShippingCountdown.productDetail.time.days',
+                ['%count%' => $days, 'count' => $days]
+            );
         }
 
-        if ($minutes === 0) {
-            $minuteLabel = '';
+        if ($hours > 0) {
+            $parts[] = $this->translator->trans(
+                'tp24ShippingCountdown.productDetail.time.hours',
+                ['%count%' => $hours, 'count' => $hours]
+            );
         }
 
-        if ($hourLabel !== '' && $minuteLabel !== '') {
-            return sprintf('%s und %s', $hourLabel, $minuteLabel);
+        if ($minutes > 0) {
+            $parts[] = $this->translator->trans(
+                'tp24ShippingCountdown.productDetail.time.minutes',
+                ['%count%' => $minutes, 'count' => $minutes]
+            );
         }
 
-        $label = $hourLabel !== '' ? $hourLabel : $minuteLabel;
+        if ($minutes === 0 && $days === 0 && $hours === 0) {
+            $parts[] = $this->translator->trans(
+                'tp24ShippingCountdown.productDetail.time.minutes',
+                ['%count%' => 0, 'count' => 0]
+            );
+        }
 
-        return $label !== '' ? $label : '0 Minuten';
+        if (count($parts) <= 1) {
+            return $parts[0] ?? '';
+        }
+
+        $connector = $this->translator->trans('tp24ShippingCountdown.productDetail.time.connector');
+        $last = array_pop($parts);
+
+        return implode(' ', $parts) . ' ' . $connector . ' ' . $last;
     }
 }

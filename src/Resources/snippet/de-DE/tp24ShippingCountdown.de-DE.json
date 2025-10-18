@@ -1,11 +1,17 @@
 {
     "tp24ShippingCountdown": {
         "productDetail": {
-            "prefix": "Bestellen Sie innerhalb der nächsten",
+            "prefix": "Bestellen Sie innerhalb von",
             "suffix": "damit Ihre Bestellung",
             "shipToday": "noch heute",
             "shipTomorrow": "morgen",
             "dispatchSuffix": "versendet wird.",
+            "time": {
+                "days": "{count, plural, one {# Tag} other {# Tagen}}",
+                "hours": "{count, plural, one {# Stunde} other {# Stunden}}",
+                "minutes": "{count, plural, one {# Minute} other {# Minuten}}",
+                "connector": "und"
+            },
             "weekday": {
                 "monday": "am Montag",
                 "tuesday": "am Dienstag",
