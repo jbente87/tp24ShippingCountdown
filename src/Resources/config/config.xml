@@ -5,7 +5,7 @@
         <title lang="de-DE">Allgemein</title>
         <title lang="en-GB">General</title>
 
-        <input-field type="text">
+        <input-field>
             <name>shippingTime</name>
             <label lang="de-DE">Versandzeitpunkt (HH:MM)</label>
             <label lang="en-GB">Shipping time (HH:MM)</label>
@@ -17,7 +17,7 @@
             <type>text</type>
         </input-field>
 
-        <text-area>
+        <input-field>
             <name>shippingHolidays</name>
             <label lang="de-DE">Feiertage (YYYY-MM-DD)</label>
             <label lang="en-GB">Public holidays (YYYY-MM-DD)</label>
@@ -25,6 +25,7 @@
             <helpText lang="en-GB">One date per line using the format YYYY-MM-DD. Shipping is paused on these days.</helpText>
             <placeholder lang="de-DE">2024-12-24</placeholder>
             <placeholder lang="en-GB">2024-12-24</placeholder>
-        </text-area>
+            <type>textarea</type>
+        </input-field>
     </card>
 </config>

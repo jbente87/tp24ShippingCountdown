@@ -8,6 +8,8 @@ use Shopware\Core\Framework\Struct\Struct;
 
 class DeliveryTimerStruct extends Struct
 {
+    private int $days;
+
     private int $hours;
 
     private int $minutes;
@@ -23,6 +25,7 @@ class DeliveryTimerStruct extends Struct
     private string $shippingDate;
 
     public function __construct(
+        int $days,
         int $hours,
         int $minutes,
         bool $shipsToday,
@@ -32,6 +35,7 @@ class DeliveryTimerStruct extends Struct
         string $shippingDate
     )
     {
+        $this->days = $days;
         $this->hours = $hours;
         $this->minutes = $minutes;
         $this->shipsToday = $shipsToday;
@@ -39,6 +43,11 @@ class DeliveryTimerStruct extends Struct
         $this->shipsTomorrow = $shipsTomorrow;
         $this->shippingWeekday = $shippingWeekday;
         $this->shippingDate = $shippingDate;
+    }
+
+    public function getDays(): int
+    {
+        return $this->days;
     }
 
     public function getHours(): int
