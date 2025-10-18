@@ -1,11 +1,17 @@
 {
     "tp24ShippingCountdown": {
         "productDetail": {
-            "prefix": "Order within the next",
+            "prefix": "Order within",
             "suffix": "so that your order ships",
             "shipToday": "today",
             "shipTomorrow": "tomorrow",
             "dispatchSuffix": "and we'll dispatch it.",
+            "time": {
+                "days": "{count, plural, one {# day} other {# days}}",
+                "hours": "{count, plural, one {# hour} other {# hours}}",
+                "minutes": "{count, plural, one {# minute} other {# minutes}}",
+                "connector": "and"
+            },
             "weekday": {
                 "monday": "on Monday",
                 "tuesday": "on Tuesday",
