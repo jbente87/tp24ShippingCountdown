@@ -7,9 +7,12 @@
             "shipTomorrow": "tomorrow",
             "dispatchSuffix": "and we'll dispatch it.",
             "time": {
-                "days": "{count, plural, one {# day} other {# days}}",
-                "hours": "{count, plural, one {# hour} other {# hours}}",
-                "minutes": "{count, plural, one {# minute} other {# minutes}}",
+                "daysSingular": "%count% day",
+                "daysPlural": "%count% days",
+                "hoursSingular": "%count% hour",
+                "hoursPlural": "%count% hours",
+                "minutesSingular": "%count% minute",
+                "minutesPlural": "%count% minutes",
                 "connector": "and"
             },
             "weekday": {

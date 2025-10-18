@@ -200,30 +200,34 @@ class ProductPageSubscriber implements EventSubscriberInterface
         $parts = [];
 
         if ($days > 0) {
-            $parts[] = $this->translator->trans(
-                'tp24ShippingCountdown.productDetail.time.days',
-                ['%count%' => $days, 'count' => $days]
+            $parts[] = $this->formatTimeUnit(
+                'tp24ShippingCountdown.productDetail.time.daysSingular',
+                'tp24ShippingCountdown.productDetail.time.daysPlural',
+                $days
             );
         }
 
         if ($hours > 0) {
-            $parts[] = $this->translator->trans(
-                'tp24ShippingCountdown.productDetail.time.hours',
-                ['%count%' => $hours, 'count' => $hours]
+            $parts[] = $this->formatTimeUnit(
+                'tp24ShippingCountdown.productDetail.time.hoursSingular',
+                'tp24ShippingCountdown.productDetail.time.hoursPlural',
+                $hours
             );
         }
 
         if ($minutes > 0) {
-            $parts[] = $this->translator->trans(
-                'tp24ShippingCountdown.productDetail.time.minutes',
-                ['%count%' => $minutes, 'count' => $minutes]
+            $parts[] = $this->formatTimeUnit(
+                'tp24ShippingCountdown.productDetail.time.minutesSingular',
+                'tp24ShippingCountdown.productDetail.time.minutesPlural',
+                $minutes
             );
         }
 
         if ($minutes === 0 && $days === 0 && $hours === 0) {
-            $parts[] = $this->translator->trans(
-                'tp24ShippingCountdown.productDetail.time.minutes',
-                ['%count%' => 0, 'count' => 0]
+            $parts[] = $this->formatTimeUnit(
+                'tp24ShippingCountdown.productDetail.time.minutesSingular',
+                'tp24ShippingCountdown.productDetail.time.minutesPlural',
+                0
             );
         }
 
@@ -235,5 +239,14 @@ class ProductPageSubscriber implements EventSubscriberInterface
         $last = array_pop($parts);
 
         return implode(' ', $parts) . ' ' . $connector . ' ' . $last;
+    }
+
+    private function formatTimeUnit(string $singularKey, string $pluralKey, int $value): string
+    {
+        $params = ['%count%' => $value];
+
+        $key = $value === 1 ? $singularKey : $pluralKey;
+
+        return $this->translator->trans($key, $params);
     }
 }
