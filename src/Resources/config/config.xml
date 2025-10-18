@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="http://api.shopware.com/schemas/system-config/1.0/config.xsd">
+    <card>
+        <title lang="de-DE">Allgemein</title>
+        <title lang="en-GB">General</title>
+
+        <input-field type="text">
+            <name>shippingTime</name>
+            <label lang="de-DE">Versandzeitpunkt (HH:MM)</label>
+            <label lang="en-GB">Shipping time (HH:MM)</label>
+            <helpText lang="de-DE">Zeitpunkt der täglichen Versandabwicklung, z. B. 14:00.</helpText>
+            <helpText lang="en-GB">Time of the daily shipping process, e.g. 14:00.</helpText>
+            <placeholder lang="de-DE">14:00</placeholder>
+            <placeholder lang="en-GB">14:00</placeholder>
+            <required>true</required>
+            <type>text</type>
+        </input-field>
+    </card>
+</config>

@@ -1,0 +1,21 @@
+{
+    "name": "tp24-shipping-countdown/tp24-shipping-countdown",
+    "description": "Displays a shipping countdown on the product detail page",
+    "type": "shopware-platform-plugin",
+    "license": "proprietary",
+    "require": {
+        "shopware/core": "^6.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "Tp24ShippingCountdown\\": "src/"
+        }
+    },
+    "extra": {
+        "shopware-plugin-class": "Tp24ShippingCountdown\\Tp24ShippingCountdown",
+        "label": {
+            "de-DE": "Tp24Versandcountdown",
+            "en-GB": "Tp24ShippingCountdown"
+        }
+    }
+}

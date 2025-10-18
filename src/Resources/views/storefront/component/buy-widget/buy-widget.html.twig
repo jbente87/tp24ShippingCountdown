@@ -1,0 +1,26 @@
+{% sw_extends '@Storefront/storefront/page/product-detail/buy-widget.html.twig' %}
+
+{% block page_product_detail_delivery_informations %}
+    {{ parent() }}
+    
+    {% set deliveryTimer = page.extensions.tp24ShippingCountdown ?? null %}
+    {% if deliveryTimer %}
+        {% set prefixText = 'tp24ShippingCountdown.productDetail.prefix'|trans %}
+        {% set suffixText = 'tp24ShippingCountdown.productDetail.suffix'|trans %}
+        {% set shipsTodayText = 'tp24ShippingCountdown.productDetail.shipToday'|trans %}
+        {% set shipsTomorrowText = 'tp24ShippingCountdown.productDetail.shipTomorrow'|trans %}
+        {% set dispatchSuffixText = 'tp24ShippingCountdown.productDetail.dispatchSuffix'|trans %}
+
+        <div class="tp24ShippingCountdown">
+            <div class="product--delivery">
+                <div class="product--delivery-timer">
+                    {{ prefixText }}
+                    <span class="delivery-timer--date">{{ deliveryTimer.getFormattedRemainingTime() }}</span>
+                    {{ suffixText }}
+                    <strong>{% if deliveryTimer.shipsToday() %}{{ shipsTodayText }}{% else %}{{ shipsTomorrowText }}{% endif %}</strong>
+                    {{ dispatchSuffixText }}<br>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
