@@ -9,6 +9,7 @@
         {% set suffixText = 'tp24ShippingCountdown.productDetail.suffix'|trans %}
         {% set shipsTodayText = 'tp24ShippingCountdown.productDetail.shipToday'|trans %}
         {% set shipsTomorrowText = 'tp24ShippingCountdown.productDetail.shipTomorrow'|trans %}
+        {% set shippingWeekdayText = ('tp24ShippingCountdown.productDetail.weekday.' ~ deliveryTimer.getShippingWeekday())|trans %}
         {% set dispatchSuffixText = 'tp24ShippingCountdown.productDetail.dispatchSuffix'|trans %}
 
         <div class="tp24ShippingCountdown">
@@ -17,7 +18,15 @@
                     {{ prefixText }}
                     <span class="delivery-timer--date">{{ deliveryTimer.getFormattedRemainingTime() }}</span>
                     {{ suffixText }}
-                    <strong>{% if deliveryTimer.shipsToday() %}{{ shipsTodayText }}{% else %}{{ shipsTomorrowText }}{% endif %}</strong>
+                    <strong>
+                        {% if deliveryTimer.shipsToday() %}
+                            {{ shipsTodayText }}
+                        {% elseif deliveryTimer.shipsTomorrow() %}
+                            {{ shipsTomorrowText }}
+                        {% else %}
+                            {{ shippingWeekdayText }}
+                        {% endif %}
+                    </strong>
                     {{ dispatchSuffixText }}<br>
                 </div>
             </div>

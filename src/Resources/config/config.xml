@@ -16,5 +16,15 @@
             <required>true</required>
             <type>text</type>
         </input-field>
+
+        <text-area>
+            <name>shippingHolidays</name>
+            <label lang="de-DE">Feiertage (YYYY-MM-DD)</label>
+            <label lang="en-GB">Public holidays (YYYY-MM-DD)</label>
+            <helpText lang="de-DE">Ein Datum pro Zeile im Format JJJJ-MM-TT. An diesen Tagen erfolgt kein Versand.</helpText>
+            <helpText lang="en-GB">One date per line using the format YYYY-MM-DD. Shipping is paused on these days.</helpText>
+            <placeholder lang="de-DE">2024-12-24</placeholder>
+            <placeholder lang="en-GB">2024-12-24</placeholder>
+        </text-area>
     </card>
 </config>
